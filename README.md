@@ -5,6 +5,7 @@
 Запуск скриптов для генерации нагрузок XSS с обходом: 
 
 `python3 xss_bypass_swapSpaces.py input_file.txt`
+
 `python3 xss_bypass_addPrefix.py input_file.txt`
 
 Где input_file.txt - файл с нагрузками, каждая в новой строке
@@ -12,6 +13,7 @@
 Запуск скриптов для генерации нагрузок SQLi с обходом: 
 
 `python3 sqli_bypass_swapSpaces.py input_file.txt`
+
 `python3 sqli_bypass_addSlashes.py input_file.txt`
 
 Где input_file.txt - файл с нагрузками, каждая в новой строке
