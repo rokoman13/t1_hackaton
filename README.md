@@ -4,15 +4,15 @@
 
 Запуск скриптов для генерации нагрузок XSS с обходом: 
 
-python3 xss_bypass_swapSpaces.py input_file.txt
-python3 xss_bypass_addPrefix.py input_file.txt
+`python3 xss_bypass_swapSpaces.py input_file.txt`
+`python3 xss_bypass_addPrefix.py input_file.txt`
 
 Где input_file.txt - файл с нагрузками, каждая в новой строке
 
 Запуск скриптов для генерации нагрузок SQLi с обходом: 
 
-python3 sqli_bypass_swapSpaces.py input_file.txt
-python3 sqli_bypass_addSlashes.py input_file.txt
+`python3 sqli_bypass_swapSpaces.py input_file.txt`
+`python3 sqli_bypass_addSlashes.py input_file.txt`
 
 Где input_file.txt - файл с нагрузками, каждая в новой строке
 
@@ -20,5 +20,5 @@ python3 sqli_bypass_addSlashes.py input_file.txt
 
 В файле payloads.txt хранится информация по тестам нагрузок с обфускацией. Краткая сводка:
 
-SQL-injection: 2 способа обхода WAF, 19 нагрузок успешно прошли через WAF (некоторые двумя способами)
-XSS: 2 способа обхода WAF, 14 нагрузок успешно прошли через WAF
+**SQL-injection: 2 способа обхода WAF, 19 нагрузок успешно прошли через WAF (некоторые двумя способами)
+XSS: 2 способа обхода WAF, 14 нагрузок успешно прошли через WAF**
